@@ -1,0 +1,5 @@
+# notifies the reactive tier that a task has to be started/ended, returning whether the task can be started/ended or, if not, an estimated delay before the task can be started/ended
+Task task
+---
+bool success
+Rational delay

@@ -1,0 +1,5 @@
+# manages the new requirements for the given reasoner id returning the reasoner's consistency state
+uint64 reasoner_id
+string[] requirements
+---
+bool consistent
