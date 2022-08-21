@@ -6,7 +6,7 @@
   <description>A ROS2 package defining Actions and Services for interacting with a deliberative tier</description>
   <maintainer email="riccardo.debenedictis@istc.cnr.it">Riccardo De Benedictis</maintainer>
   <maintainer email="gloria.beraldo@istc.cnr.it">Gloria Beraldo</maintainer>
-  <license>Apache-2.0 license</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
