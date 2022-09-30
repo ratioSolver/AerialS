@@ -81,7 +81,7 @@ The service, intuitively, asks for the start (end) of a task, returning a boolea
 
 ## Closing tasks
 
-The notification of the termination of an activity can be used in those cases where the termination does not create problems (for example, to turn off a camera and thus save energy). In all other cases, the deliberative tier expects the reactive tier to communicate the termination of the task. This can be done through the `close_task` service, whose type is called `TaskCloser`, having the following structure:
+The notification of the termination of an activity can be used in those cases where the termination does not create problems (for example, to turn off a camera and thus save energy). In all other cases, the deliberative tier expects the reactive tier to communicate the termination of the task. This can be done through the `task_closer` service, whose type is called `TaskCloser`, having the following structure:
 
 ```
 Task task
@@ -94,7 +94,7 @@ The service, intuitively, invoked by the reactive tier, communicates the end of 
 
 ## Dynamically adding new requirements
 
-As we have seen in the previous sections, the system offers, during execution, the possibility of dynamically and incrementally adding new requirements to the planning problem. This service is called `new_requirement`. It has a type called `RequirementManager` with the following structure:
+As we have seen in the previous sections, the system offers, during execution, the possibility of dynamically and incrementally adding new requirements to the planning problem. This service is called `requirement_manager`. It has a type called `RequirementManager` with the following structure:
 
 ```
 uint64 reasoner_id
