@@ -26,17 +26,18 @@ The reasoners' states changes can be detected by subscribing to the `deliberativ
 
 ```
 uint64 reasoner_id
-uint8 CREATED = 0
-uint8 REASONING = 1
-uint8 INCONSISTENT = 2
-uint8 IDLE = 3
+uint8 REASONING = 0
+uint8 INCONSISTENT = 1
+uint8 STOPPED = 2
+uint8 PAUSED = 3
 uint8 EXECUTING = 4
-uint8 FINISHED = 5
-uint8 DESTROYED = 6
+uint8 ADAPTING = 5
+uint8 FINISHED = 6
+uint8 DESTROYED = 7
 uint8 deliberative_state
 ```
 
-Intuitively, the message notifies the interested subscribers that the `reasoner_id` planner is currently in the `deliberative_state` state. Creating a new reasoner puts it into a `CREATED` state. The reasoner immediately begins to solve the problem, jumping into the `REASONING` state. In case the planning problem has no solution the reasoner passes into the `INCONSISTENT` state and, from that moment on, it can only be `DESTROYED`. If, on the other hand, a solution is found, the reasoner goes into the `IDLE` state, waiting for an execution command by the reactive tier. Upon the arrival of this command, the reasoner passes into the `EXECUTING` state and remains there until adaptations are requested, in which case it goes back into into `REASONING`, to manage them and then return, once managed, to the `EXECUTING` state (or, if it is not possible manage the required adaptations, into the `INCONSISTENT` state) or until all the scheduled tasks are executed, in which case it jumps into `FINISHED` state.
+Intuitively, the message notifies the interested subscribers that the `reasoner_id` planner is currently in the `deliberative_state` state. Creating a new reasoner puts it into a `REASONING` state, attempting to solve the problem defined in the previous `reasoner_builder` call. In case the planning problem has no solution the reasoner passes into the `INCONSISTENT` state and, from that moment on, it can only be `DESTROYED`. If, on the other hand, a solution is found, the reasoner goes into the `STOPPED` state, waiting for a `START` execution command by the reactive tier. Upon the arrival of this command, the reasoner passes into the `EXECUTING` state, remaining there, executing the plan, until further execution commands by the reactive tier are received or adaptations are requested. In case a `PAUSE` execution command is received, the reasoner goes into a `PAUSED` state, pausing the execution of the plan. In case a `STOP` execution command is received, the reasoner goes back into the `STOPPED` state, retracting all the introduced adaptation constraints and rewinding the plan. In case an adaptation request is received, the reasoner goes into an `ADAPTING` state, managing the adaptation and returning, when done, into the previous execution state (either `PAUSED`, `STOPPED` or `EXECUTING`) or, if it is not possible manage the required adaptations, into an `INCONSISTENT` state. Finally, once all the scheduled tasks have been executed, the reasoner jumps into a `FINISHED` state.
 
 The following figure shows the possible state transitions.
 
