@@ -38,6 +38,10 @@ uint8 deliberative_state
 
 Intuitively, the message notifies the interested subscribers that the `reasoner_id` planner is currently in the `deliberative_state` state. Creating a new reasoner puts it into a `CREATED` state. The reasoner immediately begins to solve the problem, jumping into the `REASONING` state. In case the planning problem has no solution the reasoner passes into the `INCONSISTENT` state and, from that moment on, it can only be `DESTROYED`. If, on the other hand, a solution is found, the reasoner goes into the `IDLE` state, waiting for an execution command by the reactive tier. Upon the arrival of this command, the reasoner passes into the `EXECUTING` state and remains there until adaptations are requested, in which case it goes back into into `REASONING`, to manage them and then return, once managed, to the `EXECUTING` state (or, if it is not possible manage the required adaptations, into the `INCONSISTENT` state) or until all the scheduled tasks are executed, in which case it jumps into `FINISHED` state.
 
+The following figure shows the possible state transitions.
+
+![image](https://user-images.githubusercontent.com/9846797/191235819-3c7cab7f-c20c-470d-a630-28f76caba34f.png)
+
 ## Starting the execution
 
 Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `start_execution`, that triggers the execution of the generated plan. The service, whose type is called `Executor`, has the following structure:
