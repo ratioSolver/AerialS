@@ -29,6 +29,7 @@ digraph DeliberativeState {
     ADAPTING -> DESTROYED
     STOPPED -> ADAPTING [dir=both]
     STOPPED -> DESTROYED
+    STOPPED -> PAUSED [dir=both]
     PAUSED -> ADAPTING [dir=both]
     PAUSED -> DESTROYED
     EXECUTING -> ADAPTING [dir=both]
@@ -37,6 +38,7 @@ digraph DeliberativeState {
     EXECUTING -> FINISHED
     EXECUTING -> DESTROYED
     FINISHED -> ADAPTING [dir=both]
+    FINISHED -> PAUSED
     FINISHED -> DESTROYED
     INCONSISTENT -> DESTROYED
 }

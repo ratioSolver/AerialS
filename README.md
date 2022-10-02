@@ -41,7 +41,9 @@ Intuitively, the message notifies the interested subscribers that the `reasoner_
 
 The following figure shows the possible state transitions.
 
+<p align="center">
 ![DeliberativeState](https://user-images.githubusercontent.com/9846797/193443755-3595b13c-ed76-4a4e-9929-18819ddd121f.svg)
+</p>
 
 ## Starting the execution
 
@@ -49,13 +51,17 @@ Once a consistent solution has been found, the reasoner puts itself into an idle
 
 ```
 uint64 reasoner_id
+uint8 START = 0
+uint8 STOP = 1
+uint8 PAUSE = 2
+uint8 command
 string[] notify_start
 string[] notify_end
 ---
 uint8 new_state
 ```
 
-The service, specifically, is invoked with the id (`reasoner_id`) of the reasoner whose plan is waiting for execution, and a couple of arrays that indicate the predicates which, before being started (ended), require the approval of the reactive tier.
+The service, specifically, is invoked with the id (`reasoner_id`) of the reasoner whose plan is waiting for execution. The `command` value assumes either the `START`, the `STOP` or the `PAUSE` value, requiring the reasoner to start, stop or pause the execution. In case the execution is being started, a couple of arrays that indicate the predicates which, before being started (ended), require the approval of the reactive tier.
 
 ## Describing tasks
 
