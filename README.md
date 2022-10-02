@@ -42,7 +42,7 @@ Intuitively, the message notifies the interested subscribers that the `reasoner_
 The following figure shows the possible state transitions.
 
 <p align="center">
-![DeliberativeState](https://user-images.githubusercontent.com/9846797/193443755-3595b13c-ed76-4a4e-9929-18819ddd121f.svg)
+  <img width="460" height="300" src="https://user-images.githubusercontent.com/9846797/193443755-3595b13c-ed76-4a4e-9929-18819ddd121f.svg">
 </p>
 
 ## Starting the execution
