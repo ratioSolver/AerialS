@@ -15,7 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DeliberativeState.msg"
   "msg/Rational.msg"
   "msg/Task.msg"
-  "srv/Executor.srv"
+  "srv/ExecutionService.srv"
   "srv/ReasonerBuilder.srv"
   "srv/ReasonerDestroyer.srv"
   "srv/RequirementManager.srv"

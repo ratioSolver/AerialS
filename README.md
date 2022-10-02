@@ -47,7 +47,7 @@ The following figure shows the possible state transitions.
 
 ## Starting the execution
 
-Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `start_execution`, that triggers the execution of the generated plan. The service, whose type is called `Executor`, has the following structure:
+Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `execution_service`, that changes the execution state of the generated plan. The service, whose type is called `ExecutionService`, has the following structure:
 
 ```
 uint64 reasoner_id
