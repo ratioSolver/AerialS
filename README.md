@@ -41,7 +41,7 @@ Intuitively, the message notifies the interested subscribers that the `reasoner_
 
 The following figure shows the possible state transitions.
 
-![DeliberativeState](https://user-images.githubusercontent.com/9846797/193211730-d6df9711-5de5-49ce-bbe6-8b9cb26e257f.svg)
+![DeliberativeState](https://user-images.githubusercontent.com/9846797/193443755-3595b13c-ed76-4a4e-9929-18819ddd121f.svg)
 
 ## Starting the execution
 
