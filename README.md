@@ -92,7 +92,16 @@ The service, intuitively, asks for the start (end) of a task, returning a boolea
 
 ## Lengthening tasks
 
-The duration of an activity can be lengthened due to unforeseen events.
+The duration of an activity can be lengthened due to unforeseen events. If the reactive tier notices the lengthening of a task, it can communicate it to the deliberative tier, in advance, so as to promptly adapt the plan. This can be done through the `task_lengthener` service, whose type is called `TaskLengthener`, having the following structure:
+
+```
+Task task
+Rational delay
+---
+bool lengthened
+```
+
+This service demands the deliberative tier to extend the task `task` by a `delay` amount. Since the adaptation can take a long time, possibly bringing the deliberative tier into the `ADAPTING` state, the service promptly returns the `lengthened` boolean indicating, in case no trivial inconsistencies have been recognized, whether the activity has been lengthened.
 
 ## Closing tasks
 
