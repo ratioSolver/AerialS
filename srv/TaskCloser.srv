@@ -1,4 +1,4 @@
-# notifies the deliberative tier that a task has closed either with a success or with a failure
+# notifies the deliberative tier that a task has been closed either, with a success or with a failure
 Task task
 bool success
 ---

@@ -47,7 +47,7 @@ The following figure shows the possible state transitions.
 
 ## Starting the execution
 
-Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `execution_service`, that changes the execution state of the generated plan. The service, whose type is called `ExecutionService`, has the following structure:
+Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `executor`, that changes the execution state of the generated plan. The service, whose type is called `Executor`, has the following structure:
 
 ```
 uint64 reasoner_id
@@ -89,6 +89,10 @@ rational delay
 ```
 
 The service, intuitively, asks for the start (end) of a task, returning a boolean (`success`) indicating whether the task can be started (ended). In case the task cannot be started (ended), it is possible to provide the indicative amount of time (`delay`) before the task can be started (ended). It is worth noting that the permission to start (end) the execution of a task, offered by the reactive tier, does not directly translate into its starting (ending). Suppose, for example, that by the modeled domain two tasks must start at the same time but, during the execution, only one of them is considered executable by the reactive tier, the latter could return false to just one of them, yet both tasks, compatibly with the other involved constraints, should be delayed. Before communicating the start (end) of a task, in particular, the executor requests permission to the reactive tier, delaying, with the propagation of the involved constraints, the start (end) of those tasks for which permission is not granted. Only those tasks which should have started (ended) and which have not been delayed can then be executed (terminated). The beginning (ending) of the execution of a task is communicated to the reactive tier, on a different channel, through the `start_task` (`end_task`) service having the same type.
+
+## Lengthening tasks
+
+The duration of an activity can be lengthened due to unforeseen events.
 
 ## Closing tasks
 
