@@ -8,27 +8,24 @@ else()
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
+find_package(catkin REQUIRED COMPONENTS message_generation)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/DeliberativeState.msg"
-  "msg/Rational.msg"
-  "msg/Task.msg"
-  "srv/Executor.srv"
-  "srv/ReasonerBuilder.srv"
-  "srv/ReasonerDestroyer.srv"
-  "srv/RequirementManager.srv"
-  "srv/TaskLengthener.srv"
-  "srv/TaskCloser.srv"
-  "srv/TaskExecutor.srv"
+add_message_files(FILES
+  "DeliberativeState.msg"
+  "Rational.msg"
+  "Task.msg"
 )
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  set(ament_cmake_copyright_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+add_service_files(FILES
+  "Executor.srv"
+  "ReasonerBuilder.srv"
+  "ReasonerDestroyer.srv"
+  "RequirementManager.srv"
+  "TaskLengthener.srv"
+  "TaskCloser.srv"
+  "TaskExecutor.srv"
+)
 
-ament_package()
+generate_messages()
+
+catkin_package(CATKIN_DEPENDS message_runtime)
