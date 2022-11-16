@@ -42,7 +42,8 @@ Intuitively, the message notifies the interested subscribers that the `reasoner_
 The following figure shows the possible state transitions.
 
 ```mermaid
-stateDiagram-v2 LR
+stateDiagram-v2
+    direction LR
     [*] --> REASONING
     DESTROYED --> [*]
     REASONING --> STOPPED
