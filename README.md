@@ -43,7 +43,7 @@ The following figure shows the possible state transitions.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> STOPPED
+    [*] --> REASONING
     DESTROYED --> [*]
     REASONING --> STOPPED
     REASONING --> INCONSISTENT
