@@ -42,11 +42,16 @@ Intuitively, the message notifies the interested subscribers that the `reasoner_
 The following figure shows the possible state transitions.
 
 ```mermaid
-stateDiagram-v2 TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+stateDiagram-v2
+    [*] --> STOPPED
+    DESTROYED --> [*]
+    REASONING --> STOPPED
+    REASONING --> INCONSISTENT
+    REASONING --> DESTROYED
+    ADAPTING --> INCONSISTENT
+    ADAPTING --> DESTROYED
+    STOPPED --> ADAPTING
+    ADAPTING --> STOPPED
 ```
 
 <p align="center">
