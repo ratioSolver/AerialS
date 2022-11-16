@@ -92,10 +92,6 @@ stateDiagram-v2
     INCONSISTENT --> DESTROYED
 ```
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/9846797/193443755-3595b13c-ed76-4a4e-9929-18819ddd121f.svg">
-</p>
-
 ## Starting the execution
 
 Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `executor`, that changes the execution state of the generated plan. The service, whose type is called `Executor`, has the following structure:
