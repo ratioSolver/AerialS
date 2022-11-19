@@ -116,18 +116,18 @@ rational delay
 
 The service, intuitively, asks for the start (end) of a task, returning a boolean (`success`) indicating whether the task can be started (ended). In case the task cannot be started (ended), it is possible to provide the indicative amount of time (`delay`) before the task can be started (ended). It is worth noting that the permission to start (end) the execution of a task, offered by the reactive tier, does not directly translate into its starting (ending). Suppose, for example, that by the modeled domain two tasks must start at the same time but, during the execution, only one of them is considered executable by the reactive tier, the latter could return false to just one of them, yet both tasks, compatibly with the other involved constraints, should be delayed. Before communicating the start (end) of a task, in particular, the executor requests permission to the reactive tier, delaying, with the propagation of the involved constraints, the start (end) of those tasks for which permission is not granted. Only those tasks which should have started (ended) and which have not been delayed can then be executed (terminated). The beginning (ending) of the execution of a task is communicated to the reactive tier, on a different channel, through the `start_task` (`end_task`) service having the same type.
 
-## Lengthening tasks
+## Delaying and extending tasks
 
-The duration of an activity can be lengthened due to unforeseen events. If the reactive tier notices the lengthening of a task, it can communicate it to the deliberative tier, in advance, so as to promptly adapt the plan. This can be done through the `task_lengthener` service, whose type is called `TaskLengthener`, having the following structure:
+The start (end) of an activity can be delayed due to unforeseen events. If the reactive tier recognizes the need to delay the execution (end) of a task, it can communicate it to the deliberative tier, in advance, so as to promptly adapt the plan. This can be done through the `task_delayer` (`task_extender`) service, whose type is called `TaskDelayer`, having the following structure:
 
 ```
 Task task
 Rational delay
 ---
-bool lengthened
+bool delayed
 ```
 
-This service demands the deliberative tier to extend the task `task` by a `delay` amount. Since the adaptation can take a long time, possibly bringing the deliberative tier into the `ADAPTING` state, the service promptly returns the `lengthened` boolean indicating, in case no trivial inconsistencies have been recognized, whether the activity has been lengthened.
+This service demands the deliberative tier to delay (extend) the task `task` by a `delay` amount. Since the adaptation can take a long time, possibly bringing the deliberative tier into the `ADAPTING` state, the service promptly returns the `delayed` boolean indicating, in case no trivial inconsistencies have been recognized, whether the activity has been delayed (extended).
 
 ## Closing tasks
 

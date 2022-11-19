@@ -19,7 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ReasonerBuilder.srv"
   "srv/ReasonerDestroyer.srv"
   "srv/RequirementManager.srv"
-  "srv/TaskLengthener.srv"
+  "srv/TaskDelayer.srv"
   "srv/TaskCloser.srv"
   "srv/TaskExecutor.srv"
 )

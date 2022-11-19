@@ -1,0 +1,5 @@
+# notifies the deliberative tier that the start of a task needs to be delayed
+Task task
+Rational delay
+---
+bool delayed
