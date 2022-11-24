@@ -28,32 +28,51 @@ The reasoners' states changes can be detected by subscribing to the `deliberativ
 uint64 reasoner_id
 uint8 REASONING = 0
 uint8 INCONSISTENT = 1
-uint8 STOPPED = 2
-uint8 PAUSED = 3
-uint8 EXECUTING = 4
-uint8 ADAPTING = 5
-uint8 FINISHED = 6
-uint8 DESTROYED = 7
+uint8 IDLE = 2
+uint8 EXECUTING = 3
+uint8 ADAPTING = 4
+uint8 FINISHED = 5
+uint8 DESTROYED = 6
 uint8 deliberative_state
 ```
 
-Intuitively, the message notifies the interested subscribers that the `reasoner_id` planner is currently in the `deliberative_state` state. Creating a new reasoner puts it into a `REASONING` state, attempting to solve the problem defined in the previous `reasoner_builder` call. In case the planning problem has no solution the reasoner passes into the `INCONSISTENT` state and, from that moment on, it can only be `DESTROYED`. If, on the other hand, a solution is found, the reasoner goes into the `STOPPED` state, waiting for a `START` execution command by the reactive tier. Upon the arrival of this command, the reasoner passes into the `EXECUTING` state, remaining there, executing the plan, until further execution commands by the reactive tier are received or adaptations are requested. In case a `PAUSE` execution command is received, the reasoner goes into a `PAUSED` state, pausing the execution of the plan. In case a `STOP` execution command is received, the reasoner goes back into the `STOPPED` state, retracting all the introduced adaptation constraints and rewinding the plan. In case an adaptation request is received, the reasoner goes into an `ADAPTING` state, managing the adaptation and returning, when done, into the previous execution state (either `PAUSED`, `STOPPED` or `EXECUTING`) or, if it is not possible manage the required adaptations, into an `INCONSISTENT` state. Finally, once all the scheduled tasks have been executed, the reasoner jumps into a `FINISHED` state.
+Intuitively, the message notifies the interested subscribers that the `reasoner_id` planner is currently in the `deliberative_state` state. Creating a new reasoner puts it into a `REASONING` state, attempting to solve the problem defined in the previous `reasoner_builder` call. In case the planning problem has no solution the reasoner passes into the `INCONSISTENT` state and, from that moment on, it can only be `DESTROYED`. If, on the other hand, a solution is found, the reasoner goes into the `IDLE` state, waiting for a `START` execution command by the reactive tier, or, in case the solution contains non planned activities, into a `FINISHED` state. Upon the arrival of the `START` command, the reasoner passes into the `EXECUTING` state, remaining there, executing the plan, until further execution commands by the reactive tier are received or adaptations are requested. In case a `PAUSE` execution command is received, the reasoner goes back into the `IDLE` state, pausing the execution of the plan. Whenever an adaptation request is received, the reasoner goes into an `ADAPTING` state, managing the adaptation and returning, when done, into the previous execution state (either `IDLE` or `EXECUTING`) or, if it is not possible manage the required adaptations, into an `INCONSISTENT` state. Finally, once all the scheduled tasks have been executed, the reasoner jumps into a `FINISHED` state.
 
 The following figure shows the possible state transitions.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/9846797/193443755-3595b13c-ed76-4a4e-9929-18819ddd121f.svg">
-</p>
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> REASONING
+    DESTROYED --> [*]
+    REASONING --> IDLE
+    REASONING --> INCONSISTENT
+    REASONING --> FINISHED
+    REASONING --> DESTROYED
+    IDLE --> ADAPTING
+    IDLE --> EXECUTING
+    IDLE --> DESTROYED
+    ADAPTING --> IDLE
+    ADAPTING --> EXECUTING
+    ADAPTING --> INCONSISTENT
+    ADAPTING --> FINISHED
+    ADAPTING --> DESTROYED
+    EXECUTING --> ADAPTING
+    EXECUTING --> FINISHED
+    EXECUTING --> DESTROYED
+    FINISHED --> ADAPTING
+    FINISHED --> DESTROYED
+    INCONSISTENT --> DESTROYED
+```
 
 ## Starting the execution
 
-Once a consistent solution has been found, the reasoner puts itself into an idle state, waiting for the invocation from the reactive tier of a service, called `executor`, that changes the execution state of the generated plan. The service, whose type is called `Executor`, has the following structure:
+Once a consistent solution has been found, the reasoner puts itself into the `IDLE` state, waiting for the invocation from the reactive tier of a service, called `executor`, that changes the execution state of the generated plan. The service, whose type is called `Executor`, has the following structure:
 
 ```
 uint64 reasoner_id
 uint8 START = 0
-uint8 STOP = 1
-uint8 PAUSE = 2
+uint8 PAUSE = 1
 uint8 command
 string[] notify_start
 string[] notify_end
@@ -61,7 +80,7 @@ string[] notify_end
 uint8 new_state
 ```
 
-The service, specifically, is invoked with the id (`reasoner_id`) of the reasoner whose plan is waiting for execution. The `command` value assumes either the `START`, the `STOP` or the `PAUSE` value, requiring the reasoner to start, stop or pause the execution. In case the execution is being started, a couple of arrays that indicate the predicates which, before being started (ended), require the approval of the reactive tier.
+The service, specifically, is invoked with the id (`reasoner_id`) of the reasoner whose plan is waiting for execution. The `command` value assumes either the `START` or the `PAUSE` value, requiring the reasoner to start or pause the execution. In case the execution is being started, a couple of arrays indicate the predicates which, before being started (ended), require the approval of the reactive tier.
 
 ## Describing tasks
 
@@ -90,18 +109,18 @@ rational delay
 
 The service, intuitively, asks for the start (end) of a task, returning a boolean (`success`) indicating whether the task can be started (ended). In case the task cannot be started (ended), it is possible to provide the indicative amount of time (`delay`) before the task can be started (ended). It is worth noting that the permission to start (end) the execution of a task, offered by the reactive tier, does not directly translate into its starting (ending). Suppose, for example, that by the modeled domain two tasks must start at the same time but, during the execution, only one of them is considered executable by the reactive tier, the latter could return false to just one of them, yet both tasks, compatibly with the other involved constraints, should be delayed. Before communicating the start (end) of a task, in particular, the executor requests permission to the reactive tier, delaying, with the propagation of the involved constraints, the start (end) of those tasks for which permission is not granted. Only those tasks which should have started (ended) and which have not been delayed can then be executed (terminated). The beginning (ending) of the execution of a task is communicated to the reactive tier, on a different channel, through the `start_task` (`end_task`) service having the same type.
 
-## Lengthening tasks
+## Delaying and extending tasks
 
-The duration of an activity can be lengthened due to unforeseen events. If the reactive tier notices the lengthening of a task, it can communicate it to the deliberative tier, in advance, so as to promptly adapt the plan. This can be done through the `task_lengthener` service, whose type is called `TaskLengthener`, having the following structure:
+The start (end) of an activity can be delayed due to unforeseen events. If the reactive tier recognizes the need to delay the execution (end) of a task, it can communicate it to the deliberative tier, in advance, so as to promptly adapt the plan. This can be done through the `task_delayer` (`task_extender`) service, whose type is called `TaskDelayer`, having the following structure:
 
 ```
 Task task
 Rational delay
 ---
-bool lengthened
+bool delayed
 ```
 
-This service demands the deliberative tier to extend the task `task` by a `delay` amount. Since the adaptation can take a long time, possibly bringing the deliberative tier into the `ADAPTING` state, the service promptly returns the `lengthened` boolean indicating, in case no trivial inconsistencies have been recognized, whether the activity has been lengthened.
+This service demands the deliberative tier to delay (extend) the task `task` by a `delay` amount. Since the adaptation can take a long time, possibly bringing the deliberative tier into the `ADAPTING` state, the service promptly returns the `delayed` boolean indicating, in case no trivial inconsistencies have been recognized, whether the activity has been delayed (extended).
 
 ## Closing tasks
 

@@ -21,7 +21,7 @@ add_service_files(FILES
   "ReasonerBuilder.srv"
   "ReasonerDestroyer.srv"
   "RequirementManager.srv"
-  "TaskLengthener.srv"
+  "TaskDelayer.srv"
   "TaskCloser.srv"
   "TaskExecutor.srv"
 )
